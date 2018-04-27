@@ -86,5 +86,23 @@ The maximum date. Usage is same of `min`.
 ###### Default: `false`
 Use range mode or not. If  pass `true`, the binding value should be an Array  containg the range start and range end. eg. `['1970-01-01', '3016-01-01']`
 
+#### isOpen
+###### Type: `Boolean`
+###### default: `false`
+External flag for open or close panel. This props is synchronized with the status of the panel.
+
+```html
+<datepicker v-model="date" :isOpen.sync="isOpenDatepicker"></datepicker>
+```
+
+#### closeDelay
+###### Type: `Number`
+###### default: `0`
+Delay in msec before closing panel after select.
+
+```html
+<datepicker v-model="date" :closeDelay="500"></datepicker>
+```
+
 ## Licence
 MIT

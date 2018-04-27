@@ -27,7 +27,7 @@
                     <ul class="year-list">
                         <li v-for="item in yearList"
                             v-text="item"
-                            :class="{selected: isSelected('year', item), invalid: validateYear(item)}" 
+                            :class="{selected: isSelected('year', item), invalid: validateYear(item)}"
                             @click="selectYear(item)"
                         >
                         </li>
@@ -36,7 +36,7 @@
                 <div class="type-month" v-show="panelType === 'month'">
                     <ul class="month-list">
                         <li v-for="(item, index) in monthList"
-                            :class="{selected: isSelected('month', index), invalid: validateMonth(index)}" 
+                            :class="{selected: isSelected('month', index), invalid: validateMonth(index)}"
                             @click="selectMonth(index)"
                         >
                             {{item | month(language)}}
@@ -106,6 +106,14 @@
             range: {
                 type: Boolean,
                 default: false
+            },
+            isOpen: {
+                type: Boolean,
+                default: false
+            },
+            closeDelay: {
+                type: Number,
+                default: 0,
             }
         },
         methods: {
@@ -117,18 +125,18 @@
                 switch (type){
                     case 'year':
                         if(!this.range) return item === this.tmpYear
-                        return (new Date(item, 0).getTime() >= new Date(this.tmpStartYear, 0).getTime() 
+                        return (new Date(item, 0).getTime() >= new Date(this.tmpStartYear, 0).getTime()
                             && new Date(item, 0).getTime() <= new Date(this.tmpEndYear, 0).getTime())
                     case 'month':
                         if(!this.range) return item === this.tmpMonth && this.year === this.tmpYear
-                        return (new Date(this.tmpYear, item).getTime() >= new Date(this.tmpStartYear, this.tmpStartMonth).getTime() 
+                        return (new Date(this.tmpYear, item).getTime() >= new Date(this.tmpStartYear, this.tmpStartMonth).getTime()
                             && new Date(this.tmpYear, item).getTime() <= new Date(this.tmpEndYear, this.tmpEndMonth).getTime())
                     case 'date':
                         if(!this.range) return this.date === item.value && this.month === this.tmpMonth && item.currentMonth
                         let month = this.tmpMonth
                         item.previousMonth && month--
                         item.nextMonth && month++
-                        return (new Date(this.tmpYear, month, item.value).getTime() >= new Date(this.tmpStartYear, this.tmpStartMonth, this.tmpStartDate).getTime() 
+                        return (new Date(this.tmpYear, month, item.value).getTime() >= new Date(this.tmpStartYear, this.tmpStartMonth, this.tmpStartDate).getTime()
                             && new Date(this.tmpYear, month, item.value).getTime() <= new Date(this.tmpEndYear, this.tmpEndMonth, this.tmpEndDate).getTime())
                 }
             },
@@ -198,7 +206,7 @@
                         this.rangeStart = true
 
                     }else if(this.range && this.rangeStart){
-                        
+
                         this.tmpEndYear = this.tmpYear
                         this.tmpEndMonth = this.tmpMonth
                         this.tmpEndDate = date.value
@@ -207,7 +215,7 @@
                             d2 = new Date(this.tmpEndYear, this.tmpEndMonth, this.tmpEndDate).getTime()
                         if(d1 > d2){
                             let tmpY, tmpM, tmpD
-                            tmpY = this.tmpEndYear 
+                            tmpY = this.tmpEndYear
                             tmpM = this.tmpEndMonth
                             tmpD = this.tmpEndDate
 
@@ -225,8 +233,16 @@
                         let value = [RangeStart, RangeEnd]
                         this.$emit('input', value)
 
-                        this.rangeStart = false
-                        this.panelState = false
+                        if ( this.closeDelay ) {
+                            setTimeout( () => {
+                                this.rangeStart = false
+                                this.panelState = false
+                            }, this.closeDelay );
+                        }
+                        else {
+                            this.rangeStart = false
+                            this.panelState = false
+                        }
                     }
                 }, 0)
             },
@@ -284,6 +300,16 @@
                 if(!newVal && Object.prototype.toString.call(this.value).slice(8, -1) === 'Array'){
                     this.$emit('input', '')
                 }
+            },
+            isOpen: {
+                handler(val) {
+                    this.panelState = val;
+                    this.rangeStart = false;
+                },
+                immediate: true,
+            },
+            panelState (val) {
+                 this.$emit('update:isOpen', val);
             }
         },
         computed: {
@@ -375,7 +401,7 @@
                     }else{
                         this.$emit('input', ['', ''])
                     }
-                    
+
                 }
                 if(!this.value){
                     this.$emit('input', '')
@@ -570,7 +596,7 @@
                 color: #ccc;
             }
         }
-        
+
     }
     .weeks{
         display: flex;
